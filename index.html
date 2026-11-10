@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grade 1 Spanish Practice: Quarter 2</title>
+<style>
+  :root{
+    --ink:#1f2340; --soft:#5a5f80; --bg:#fff8ec; --card:#ffffff;
+    --green:#1f9d55; --green-bg:#e3f7ea;
+    --c:#3b82f6; /* topic color, set per topic */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"Segoe UI", "Trebuchet MS", Arial, sans-serif;
+    color:var(--ink); background:var(--bg);
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  button{font-family:inherit; cursor:pointer}
+
+  /* ---------- HOME ---------- */
+  #home{flex:1; display:flex; flex-direction:column; align-items:center; padding:2.5vh 3vw}
+  .home-head{text-align:center; margin-bottom:2.5vh}
+  .home-head h1{margin:0; font-size:clamp(32px,4.6vw,64px); letter-spacing:.5px}
+  .home-head h1 span{color:#e4572e}
+  .home-head p{margin:.4em 0 0; font-size:clamp(16px,1.7vw,24px); color:var(--soft)}
+  .grid{
+    width:100%; max-width:1400px; flex:1;
+    display:flex; flex-wrap:wrap; justify-content:center; align-content:stretch; gap:2vh 1.6vw;
+  }
+  .topic-btn{
+    flex:0 0 calc((100% - 3.2vw) / 3);
+    border:none; border-radius:24px; padding:1.6vh 1.2vw;
+    background:var(--c); color:#fff; text-align:left;
+    display:flex; align-items:center; gap:1.2vw;
+    box-shadow:0 6px 0 rgba(0,0,0,.18); transition:transform .1s;
+  }
+  .topic-btn:hover{transform:translateY(-3px)}
+  .topic-btn:active{transform:translateY(2px); box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  .topic-btn .ico{font-size:clamp(40px,5vw,76px); line-height:1; background:rgba(255,255,255,.25); border-radius:18px; padding:.15em .2em}
+  .topic-btn .t{font-size:clamp(20px,2.1vw,34px); font-weight:800; line-height:1.15}
+  .topic-btn .s{font-size:clamp(14px,1.25vw,20px); opacity:.95; margin-top:.25em}
+  .home-foot{margin-top:2vh; font-size:15px; color:var(--soft); display:flex; gap:20px; align-items:center; flex-wrap:wrap; justify-content:center}
+  .small-btn{border:2px solid #ccd; background:#fff; border-radius:12px; padding:6px 14px; font-size:15px; color:var(--ink)}
+
+  /* ---------- ACTIVITY ---------- */
+  #activity{flex:1; display:none; flex-direction:column}
+  .bar{
+    background:var(--c); color:#fff; display:flex; align-items:center; gap:16px;
+    padding:1.2vh 2vw; font-size:clamp(18px,1.8vw,28px); font-weight:800;
+  }
+  .bar .bar-ico{font-size:1.4em}
+  .bar .dots{margin-left:auto; display:flex; gap:8px}
+  .dot{width:16px; height:16px; border-radius:50%; background:rgba(255,255,255,.4)}
+  .dot.on{background:#fff}
+  .stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1.5vh 4vw; text-align:center; gap:1.4vh}
+  .dir{
+    font-size:clamp(17px,min(1.9vw,3.2vh),30px); color:var(--soft); font-weight:600;
+    background:#fff; border-radius:999px; padding:.35em 1.1em; border:3px solid var(--c);
+  }
+  .dir b{color:var(--ink)}
+  .vis{font-size:clamp(56px,min(10vw,14vh),160px); line-height:1.1; min-height:1em}
+  .vis .lbl{display:block; font-size:clamp(18px,1.8vw,28px); font-weight:700; color:var(--soft)}
+  .vis-row{display:flex; gap:3vw; justify-content:center; align-items:flex-end; flex-wrap:wrap}
+  .vis-row > div{display:flex; flex-direction:column; align-items:center}
+  .story{
+    background:#fff; border-left:10px solid var(--c); border-radius:16px;
+    padding:1.2vh 2vw; font-size:clamp(20px,min(2.4vw,3.6vh),38px); line-height:1.35; text-align:left;
+    box-shadow:0 3px 10px rgba(0,0,0,.07)
+  }
+  .q{font-size:clamp(30px,min(5vw,7.5vh),78px); font-weight:800; line-height:1.15; margin:0}
+  .blank{display:inline-block; min-width:2.6em; border-bottom:6px solid var(--c)}
+  .choices{display:flex; gap:2vw; flex-wrap:wrap; justify-content:center}
+  .choice{
+    background:#fff; border:4px solid var(--c); border-radius:20px;
+    font-size:clamp(22px,min(3vw,5vh),48px); font-weight:700; padding:.2em .9em;
+    display:flex; align-items:center; gap:.45em; transition:all .25s;
+  }
+  .choice .letter{
+    background:var(--c); color:#fff; border-radius:50%;
+    width:1.5em; height:1.5em; display:inline-flex; align-items:center; justify-content:center; font-size:.75em
+  }
+  .choice.right{border-color:var(--green); background:var(--green-bg)}
+  .choice.right .letter{background:var(--green)}
+  .choice.dim{opacity:.35}
+  .answer{
+    display:none; background:var(--green-bg); border:4px solid var(--green); border-radius:22px;
+    padding:.8vh 3vw; animation:pop .3s ease-out;
+  }
+  .answer.show{display:block}
+  .answer .es{font-size:clamp(28px,min(4.4vw,6.5vh),70px); font-weight:800; color:#126b3a}
+  .answer .en{font-size:clamp(16px,min(1.8vw,3vh),28px); color:var(--soft); margin-top:.2em}
+  @keyframes pop{from{transform:scale(.85); opacity:0} to{transform:scale(1); opacity:1}}
+
+  /* intro + end */
+  .goal{font-size:clamp(20px,2vw,32px); color:var(--soft); font-weight:600}
+  .bank{display:flex; gap:1.6vw; flex-wrap:wrap; justify-content:center; max-width:1300px}
+  .word{
+    background:#fff; border-radius:20px; padding:1.2vh 1.4vw; min-width:11vw;
+    border-bottom:8px solid var(--c); box-shadow:0 3px 10px rgba(0,0,0,.07)
+  }
+  .word .e{font-size:clamp(46px,5vw,84px); line-height:1.1}
+  .word .w{font-size:clamp(22px,2.3vw,38px); font-weight:800}
+  .word .m{font-size:clamp(14px,1.3vw,20px); color:var(--soft)}
+  .vis.hero{font-size:clamp(90px,min(14vw,24vh),240px)}
+  .goal-big{font-size:clamp(30px,min(4.2vw,7vh),68px); font-weight:800; max-width:1200px; line-height:1.25}
+  .bank.big{align-items:flex-end}
+  .bank.big .word{min-width:15vw; padding:2vh 1.8vw}
+  .bank.big .e{font-size:clamp(60px,min(7vw,13vh),120px)}
+  .bank.big .w{font-size:clamp(26px,min(3vw,5vh),50px)}
+  .bank.big .m{font-size:clamp(16px,min(1.6vw,2.8vh),26px)}
+  .story-wrap{display:flex; gap:3vw; align-items:center; justify-content:center; width:100%; max-width:1500px}
+  .pic{width:min(46vw,62vh); aspect-ratio:4/3; object-fit:contain; border-radius:20px; background:#fff; box-shadow:0 3px 10px rgba(0,0,0,.08)}
+  .pic.ph{border:5px dashed var(--c); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.4em; padding:2vh 2vw; text-align:center; font-size:clamp(18px,min(1.9vw,3.2vh),30px); color:var(--soft); box-shadow:none}
+  .ph-ico{font-size:2.6em}
+  .ph-note{font-size:.75em}
+  .pic-sm{height:min(22vh,220px); border-radius:14px; box-shadow:0 3px 10px rgba(0,0,0,.08)}
+  .story.big{font-size:clamp(24px,min(2.8vw,4.6vh),46px); padding:2vh 2.4vw}
+  .story-title{font-weight:900; color:var(--c); margin-bottom:.3em}
+  .snd-title{margin:0; font-size:clamp(34px,min(4.6vw,7.5vh),74px); font-weight:900; color:var(--c)}
+  .syl{display:flex; gap:1.2vw; flex-wrap:wrap; justify-content:center}
+  .syl span{background:var(--c); color:#fff; border-radius:14px; padding:.15em .6em; font-size:clamp(24px,min(2.8vw,4.6vh),46px); font-weight:800}
+  .sb{font-size:clamp(20px,min(2.2vw,3.8vh),36px); color:var(--soft); margin-top:.2em}
+  .sb .stress{color:var(--c); font-weight:900; font-size:1.15em}
+  .sb .dash{margin:0 .2em; opacity:.6}
+  .bank.snd .word{padding:2.4vh 2.6vw; min-width:18vw}
+  .bank.snd .w{font-size:clamp(34px,min(4.4vw,7.5vh),72px)}
+  .bank.snd .sb{font-size:clamp(24px,min(2.8vw,4.8vh),46px)}
+  .tip{font-size:clamp(17px,min(1.8vw,3vh),28px); color:var(--soft)}
+  .tag{display:inline-block; background:#fff7d6; border:4px dashed #b45309; color:#7c2d12; font-weight:900; border-radius:14px; padding:.1em .45em; vertical-align:middle; white-space:nowrap}
+  .week{display:inline-flex; gap:.12em; font-size:.3em; vertical-align:middle; flex-wrap:wrap; justify-content:center; max-width:94vw}
+  .day{position:relative; background:#fff; border:4px solid var(--c); border-radius:14px; padding:.55em .5em .35em; font-weight:800; color:var(--ink); line-height:1}
+  .day.hoy{background:var(--c); color:#fff; transform:scale(1.12)}
+  .hoy-t{position:absolute; top:-.8em; left:50%; transform:translateX(-50%); background:#e4572e; color:#fff; font-size:.6em; padding:.1em .45em; border-radius:8px}
+  .town{display:inline-grid; grid-template-columns:repeat(4,1fr); gap:.12em; background:#d9f2c7; border:5px solid #9ad17a; border-radius:18px; padding:.12em; font-size:.95em}
+  .spot{position:relative; background:#fff; border-radius:12px; padding:.05em .15em; line-height:1.1}
+  .num{position:absolute; top:-.12em; left:-.08em; background:var(--c); color:#fff; font-size:.3em; font-weight:900; width:1.6em; height:1.6em; border-radius:50%; display:flex; align-items:center; justify-content:center}
+  .bank.days{max-width:1250px; gap:1.6vh 1.2vw}
+  .bank.days .word{flex:0 0 calc((100% - 3.6vw) / 4); min-width:0; padding:1.2vh 1vw; border-bottom-width:6px}
+  .bank.days .e{font-size:clamp(20px,min(2vw,3.4vh),32px); font-weight:900; color:#fff; background:var(--c); border-radius:50%; width:1.8em; height:1.8em; display:flex; align-items:center; justify-content:center; margin:0 auto .2em}
+  .bank.days .w{font-size:clamp(24px,min(2.8vw,4.8vh),46px)}
+  .bank.days .m{font-size:clamp(16px,min(1.6vw,2.8vh),26px)}
+  .talk{display:flex; flex-direction:column; gap:1.1vh; width:min(1000px,80vw)}
+  .bub{font-size:clamp(26px,min(3vw,5vh),50px); font-weight:700; background:#fff; border-radius:24px; padding:.35em .9em; max-width:80%; box-shadow:0 3px 10px rgba(0,0,0,.08); text-align:left}
+  .bub.luna{align-self:flex-start; border-left:10px solid #d63384}
+  .bub.leo{align-self:flex-end; border-right:10px solid #0077b6}
+  .bub .ten{display:block; font-size:.48em; color:var(--soft); font-weight:500; margin-top:.1em}
+  .bub .who{display:block; font-size:.5em; color:var(--soft); font-weight:700}
+  .story .sl{margin-bottom:.35em}
+  .story .sen{display:block; font-size:.62em; color:var(--soft); line-height:1.25}
+  .story.big{font-size:clamp(24px,min(2.7vw,4.6vh),44px); flex:0 1 52vw}
+  .story-wrap .pic{flex:0 0 auto; width:min(38vw,56vh)}
+  .model{font-size:clamp(24px,min(2.8vw,4.6vh),46px); font-weight:800; background:#fff; border-radius:16px; padding:.2em .8em; border:3px dashed var(--c)}
+  .cal{display:inline-flex; flex-direction:column; align-items:center; background:#fff; border:4px solid var(--c); border-radius:14px; overflow:hidden; width:2.2em; line-height:1; vertical-align:bottom; position:relative; margin:0 .08em}
+  .cal-m{background:var(--c); color:#fff; width:100%; text-align:center; font-size:.24em; font-weight:800; padding:.25em 0}
+  .cal-d{font-size:.8em; font-weight:900; color:var(--ink); padding:.08em 0 0}
+  .cal-w{font-size:.2em; font-weight:700; color:var(--soft); padding:.1em 0 .35em}
+  .cal-t{position:absolute; top:.32em; right:-.05em; transform:rotate(12deg); background:#e4572e; color:#fff; font-size:.16em; font-weight:900; padding:.15em .4em; border-radius:6px}
+  .sign{display:inline-block; color:#fff; font-weight:900; letter-spacing:.06em; border-radius:12px; padding:.15em .45em; font-size:.42em; border:4px solid rgba(0,0,0,.2); vertical-align:middle}
+  .bank.signs .e{font-size:clamp(70px,min(8vw,13vh),130px)}
+  .tbl{position:relative; display:inline-block; vertical-align:bottom}
+  .tbl-top{position:absolute; left:8%; right:8%; top:38%; height:8%; background:#8a5a2b; border-radius:4px}
+  .tbl-leg{position:absolute; top:44%; bottom:2%; width:6%; background:#8a5a2b; border-radius:3px}
+  .tbl-leg.l{left:14%} .tbl-leg.r{right:14%}
+  .tbl-item{position:absolute; font-size:.55em; line-height:1}
+  .bank.months{max-width:1250px; gap:1.6vh 1.2vw}
+  .bank.months .word{flex:0 0 calc((100% - 3.6vw) / 4); min-width:0; padding:1vh 1vw; display:flex; align-items:center; gap:.6vw; border-bottom-width:5px}
+  .bank.months .e{font-size:clamp(18px,min(1.8vw,3vh),30px); font-weight:900; color:#fff; background:var(--c); border-radius:50%; width:1.7em; height:1.7em; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+  .bank.months .w{font-size:clamp(22px,min(2.5vw,4.4vh),40px)}
+  .bank.months .m{display:none}
+  .big-title{font-size:clamp(44px,6vw,96px); font-weight:900; margin:0; color:var(--c)}
+
+  /* controls */
+  .controls{display:flex; justify-content:center; gap:1.4vw; padding:1vh 2vw 1.8vh; flex-wrap:wrap}
+  .ctl{
+    border:none; border-radius:18px; font-size:clamp(20px,2vw,32px); font-weight:800;
+    padding:.45em 1.1em; color:#fff; box-shadow:0 5px 0 rgba(0,0,0,.2)
+  }
+  .ctl:active{transform:translateY(3px); box-shadow:0 2px 0 rgba(0,0,0,.2)}
+  .ctl:disabled{opacity:.35; cursor:default}
+  .ctl.home{background:#6b7280}
+  .ctl.back{background:#8b5cf6}
+  .ctl.show{background:var(--green); min-width:14vw}
+  .ctl.next{background:#e4572e}
+
+  /* ball and box scene */
+  .scene{position:relative; width:min(560px,60vw); height:min(300px,32vw,27vh)}
+  .scene .ground{position:absolute; left:0; right:0; bottom:8%; height:10px; background:#9ad17a; border-radius:6px}
+  .scene .box{
+    position:absolute; left:50%; transform:translateX(-50%); bottom:calc(8% + 6px);
+    width:34%; height:52%; background:#c8874a; border:6px solid #8a5a2b; border-radius:10px; z-index:2
+  }
+  .scene .box::after{content:""; position:absolute; left:42%; width:16%; top:0; bottom:0; background:#e2b27a}
+  .scene .ball{
+    position:absolute; width:17%; aspect-ratio:1; border-radius:50%;
+    background:radial-gradient(circle at 32% 30%, #ffd1dc 0 12%, #ff3b6b 13% 100%);
+    border:5px solid #b3123f;
+  }
+  .scene .ball.left{left:4%; bottom:calc(8% + 6px); z-index:3}
+  .scene .ball.right{right:4%; bottom:calc(8% + 6px); z-index:3}
+  .scene .ball.front{left:50%; transform:translateX(-50%); bottom:2%; z-index:3}
+  .scene .ball.behind{left:50%; transform:translateX(-50%); bottom:50%; z-index:1}
+  .side-tags{display:flex; justify-content:space-between; width:min(560px,60vw); font-size:clamp(14px,1.3vw,20px); color:var(--soft); font-weight:700}
+
+  @media (max-width:800px){ .topic-btn{flex-basis:calc((100% - 1.6vw) / 2)} }
+</style>
+</head>
+<body>
+
+<section id="home">
+  <div class="home-head">
+    <h1>¡Hola, <span>primer grado</span>! Práctica de español</h1>
+    <p>Grade 1 &bull; Quarter 2 &bull; Tuesdays</p>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="home-foot">
+    <button class="small-btn" onclick="toggleFull()">⛶ Full screen</button>
+    <span>Keyboard: → Next &nbsp; ← Back &nbsp; Space = Show Answer &nbsp; H = Home</span>
+  </div>
+</section>
+
+<section id="activity">
+  <div class="bar"><span class="bar-ico" id="barIco"></span><span id="barTitle"></span><div class="dots" id="dots"></div></div>
+  <div class="stage" id="stage"></div>
+  <div class="controls">
+    <button class="ctl home" onclick="goHome()">🏠 Home</button>
+    <button class="ctl back" id="backBtn" onclick="back()">◀ Back</button>
+    <button class="ctl show" id="showBtn" onclick="reveal()">👀 Show Answer</button>
+    <button class="ctl next" id="nextBtn" onclick="next()">Next ▶</button>
+  </div>
+</section>
+
+<script>
+/* ---------- helpers for visuals ---------- */
+const row = (...items) => '<div class="vis-row">' + items.map(i =>
+  Array.isArray(i) ? `<div><span>${i[0]}</span><span class="lbl">${i[1]}</span></div>` : `<div><span>${i}</span></div>`
+).join('') + '</div>';
+const rep = (e, n) => e.repeat(n);
+const scene = pos => `<div class="side-tags"><span>◀ left side of the screen</span><span>right side of the screen ▶</span></div>
+  <div class="scene"><div class="ground"></div><div class="box"></div><div class="ball ${pos}"></div></div>`;
+const sized = (e, px) => `<span style="font-size:${px}">${e}</span>`;
+
+/* ---------- story pictures ----------
+   Paste an image (data: URI or file name) for each story. Empty = placeholder box. */
+const PICS = {
+  feliz:"", cansado:"", tienda:"", gusta:"", quieres:"", dias:"", lugares:"", adonde:"", ropa:"", llevo:"", ana:""
+};
+const PIC_NAMES = {
+  feliz:"Textbook p. 24: four feeling panels (feliz, triste, enojada)",
+  cansado:"Textbook p. 26: a tired character says No, gracias",
+  tienda:"Textbook p. 22: a shopper buys a ball for three pesos",
+  gusta:"Textbook p. 28: reading, drawing, singing, playing",
+  quieres:"Textbook p. 30: an invitation to play, then taking turns",
+  dias:"Textbook p. 32: calendar panels, lunes/martes and sábado/domingo",
+  lugares:"Textbook p. 34: school, park, library, shop",
+  adonde:"Textbook p. 36: going to school, park, library, restaurant",
+  ropa:"Textbook p. 38: T-shirt, pants, dress, shoes",
+  llevo:"Textbook p. 40: shirt, pants, coat, hat",
+  ana:"Textbook p. 42: Ana says hello, feels happy, wears a hat, goes to the park"
+};
+/* If PICS is empty for a story, the page looks for images/<name>.png next to it.
+   No file there = the placeholder box shows instead. */
+function phHTML(id){
+  return `<div class="pic ph"><div class="ph-ico">🖼️</div><div><b>Picture goes here</b></div><div class="ph-note">${PIC_NAMES[id]||''}<br>(file: images/${id}.png)</div></div>`;
+}
+function picHTML(id, small){
+  const src = PICS[id] || `images/${id}.png`;
+  const fallback = small ? "this.remove()" : `this.outerHTML=phHTML('${id}')`;
+  return `<img class="${small?'pic-sm':'pic'}" src="${src}" alt="" onerror="${fallback}">`;
+}
+
+/* Hablamos speakers: teacher models, class answers */
+const SPEAKERS = ['🧑‍🏫 Teacher', '🧒 Class'];
+const TALK_DIR = 'I say one line, you say the next!';
+
+/* ---------- drawn visuals ---------- */
+function tag(n, size){
+  return `<span class="tag" style="font-size:${size||'.42em'}">🏷️ ${n} ${n === 1 ? 'peso' : 'pesos'}</span>`;
+}
+const DAYS = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+function week(hoy){
+  return `<span class="week">${DAYS.map((d, k) => `<span class="day ${k === hoy ? 'hoy' : ''}">${k === hoy ? '<span class="hoy-t">HOY</span>' : ''}${d}</span>`).join('')}</span>`;
+}
+/* picture map: 1 tienda, 2 escuela, 3 parque, 4 biblioteca */
+function townMap(){
+  const spots = [['🏪','1'],['🏫','2'],['🌳','3'],['📚','4']];
+  return `<span class="town">${spots.map(x => `<span class="spot"><span class="num">${x[1]}</span>${x[0]}</span>`).join('')}</span>`;
+}
+
+/* ---------- topics (from the Grade 1 Quarter 2 Tuesday plan + Grade 1 textbook) ---------- */
+const TOPICS = [
+{
+  title:"¿Cómo estás?", en:"Feelings", date:"Nov 10", ico:"😊", color:"#f59e0b",
+  goal:"I can say how I feel.<br>I can ask: ¿Cómo estás?",
+  vocab:[
+    {head:"¿Cómo estás?", sub:"Feelings", words:[["😀","feliz","happy"],["😢","triste","sad"],["😠","enojado / enojada","angry"]]},
+    {head:"Más palabras", sub:"More words", words:[["😴","cansado / cansada","tired"],["😌","tranquilo / tranquila","calm"],["🙏","gracias","thank you"]]}
+  ],
+  video:{title:"Cómo estás", note:"Super Simple Español: ¡Hola! song"},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["feliz","fe-LIZ"],["triste","TRIS-te"],["estoy","es-TOY"]], model:"Estoy feliz.", tip:"Make the last beat strong in feliz. In our model, z sounds like s.",
+     talk:[["¿Cómo estás?","How are you?"],["Estoy feliz.","I am happy."]]},
+    {title:"Mi voz", syl:[], words:[["cansado","can-SA-do"],["tranquila","tran-QUI-la"],["gracias","GRA-cias"]], model:"¿Cómo estás?", tip:"Clap three beats in cansado. Make the middle beat strong.",
+     talk:[["¿Cómo estás?","How are you?"],["Estoy cansado.","I am tired."],["¿Jugamos?","Shall we play?"],["No, gracias.","No, thank you."]]}
+  ],
+  turns:[
+    {dir:"How does this face feel? A or B?", vis:"😀", q:"¿Cómo estás?", choices:["Estoy feliz.","Estoy triste."], c:0, ans:"Estoy feliz.", en:"I am happy."},
+    {dir:"Say it with <b>Estoy…</b>", vis:"😢", q:"¿Cómo estás?", ans:"Estoy triste.", en:"I am sad."},
+    {tell:true, pic:"feliz", title:"Estoy feliz", lines:[["1. ¿Cómo estás?","How are you?"],["2. Estoy feliz.","I am happy."],["3. Estoy triste.","I am sad."],["4. Estoy enojada.","I am angry."]]},
+    {pic:"feliz", dir:"Which picture is sad? A, B, or C?", q:"¿Triste?", choices:["2","3","4"], c:1, ans:"3. Estoy triste.", en:"Picture 3: I am sad."},
+    {pic:"feliz", dir:"Which word means <b>happy</b>? A or B?", q:"happy = ?", choices:["feliz","triste"], c:0, ans:"feliz", en:"happy"},
+    {dir:"How does this face feel? A or B?", vis:"😴", q:"¿Cómo estás?", choices:["Estoy cansado.","Estoy enojado."], c:0, ans:"Estoy cansado.", en:"I am tired."},
+    {tell:true, pic:"cansado", title:"¿Cómo estás?", lines:[["1. ¿Cómo estás?","How are you?"],["2. Estoy cansado.","I am tired."],["3. ¿Jugamos?","Shall we play?"],["4. No, gracias.","No, thank you."]]},
+    {pic:"cansado", dir:"How does the character feel? A or B?", q:"¿Cómo está?", choices:["cansado","feliz"], c:0, ans:"Cansado.", en:"Tired."},
+    {pic:"cansado", dir:"Does the character want to play now? A or B?", q:"¿Jugamos?", choices:["Sí, gracias.","No, gracias."], c:1, ans:"No, gracias.", en:"No, thank you."},
+    {dir:"Your turn! You can answer for a puppet.", vis:"😀 😢 😠 😴 😌", q:"¿Cómo estás?", ans:"Estoy…", en:"Every feeling is okay! Example: Estoy tranquila."}
+  ]
+},
+{
+  title:"¿Cuánto cuesta?", en:"Our Classroom Shop", date:"Nov 17", ico:"🏪", color:"#e4572e",
+  goal:"I can ask a price.<br>I can ask for something politely.",
+  vocab:[
+    {head:"La tienda", sub:"The shop", words:[["🏪","la tienda","shop"],["⚽","la pelota","ball"],["📕","el libro","book"],["✏️","el lápiz","pencil"]]},
+    {head:"Palabras para hablar", sub:"Words to use", words:[[tag("?",".7em"),"¿Cuánto cuesta?","How much does it cost?"],[tag(3,".7em"),"Cuesta tres pesos.","It costs three pesos."]]}
+  ],
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["cuánto","CUÁN-to"],["cuesta","CUES-ta"],["pesos","PE-sos"]], model:"¿Cuánto cuesta?", tip:"Keep the first beat together in cuesta. Clap two beats.",
+     talk:[["Quiero una pelota. ¿Cuánto cuesta?","I would like a ball. How much does it cost?"],["Cuesta tres pesos.","It costs three pesos."],["¡Gracias!","Thank you!"]]}
+  ],
+  turns:[
+    {dir:"What is it? A or B?", vis:"✏️", q:"¿Qué es?", choices:["el lápiz","el libro"], c:0, ans:"El lápiz.", en:"The pencil."},
+    {dir:"Read the price tag.", vis:"⚽ "+tag(3), q:"¿Cuánto cuesta?", ans:"Cuesta tres pesos.", en:"It costs three pesos."},
+    {dir:"Read the price tag. A or B?", vis:"📕 "+tag(5), q:"¿Cuánto cuesta?", choices:["Cuesta dos pesos.","Cuesta cinco pesos."], c:1, ans:"Cuesta cinco pesos.", en:"It costs five pesos."},
+    {dir:"Read the price tag.", vis:"✏️ "+tag(2), q:"¿Cuánto cuesta?", ans:"Cuesta dos pesos.", en:"It costs two pesos."},
+    {tell:true, pic:"tienda", title:"En la tienda", lines:[["1. Quiero una pelota.","I would like a ball."],["2. ¿Cuánto cuesta?","How much does it cost?"],["3. Cuesta tres pesos.","It costs three pesos."],["4. ¡Gracias!","Thank you!"]]},
+    {pic:"tienda", dir:"What does the shopper want? A or B?", q:"¿Qué quiere?", choices:["una pelota","un libro"], c:0, ans:"Una pelota.", en:"A ball."},
+    {pic:"tienda", dir:"How much is the ball? Count the coins!", vis:"⚽ 🪙🪙🪙", q:"¿Cuánto cuesta la pelota?", ans:"Cuesta tres pesos.", en:"It costs three pesos."}
+  ]
+},
+{
+  title:"Me gusta jugar", en:"Activities I Like", date:"Nov 24", ico:"🖍️", color:"#2a9d8f",
+  goal:"I can name activities.<br>I can say one activity I like.",
+  words:[["🧸","jugar","to play"],["📖","leer","to read"],["🖍️","dibujar","to draw"],["🎤","cantar","to sing"]],
+  video:{title:"Me gusta", note:"Play once, then again while students sing, point, or act it out."},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["jugar","ju-GAR"],["leer","le-ER"],["dibujar","di-bu-JAR"]], model:"Me gusta jugar.", tip:"Listen to the breathy j in jugar. Leer has two vowel beats: le-ER.",
+     talk:[["¿Qué te gusta?","What do you like?"],["Me gusta dibujar.","I like to draw."]]}
+  ],
+  turns:[
+    {dir:"Finish the sentence. A or B?", vis:"📖", q:'Me gusta <span class="blank"></span>.', choices:["leer","cantar"], c:0, ans:"Me gusta leer.", en:"I like to read."},
+    {dir:"Finish the sentence.", vis:"🎤", q:'Me gusta <span class="blank"></span>.', ans:"Me gusta cantar.", en:"I like to sing."},
+    {dir:"A or B?", vis:"🖍️", q:'Me gusta <span class="blank"></span>.', choices:["jugar","dibujar"], c:1, ans:"Me gusta dibujar.", en:"I like to draw."},
+    {tell:true, pic:"gusta", title:"Me gusta jugar", lines:[["1. Me gusta leer.","I like to read."],["2. Me gusta dibujar.","I like to draw."],["3. Me gusta cantar.","I like to sing."],["4. ¡Me gusta jugar!","I like to play!"]]},
+    {pic:"gusta", dir:"Who likes to read? Which picture? A, B, or C?", q:"Me gusta leer.", choices:["1","2","3"], c:0, ans:"1. Me gusta leer.", en:"Picture 1: I like to read."},
+    {pic:"gusta", dir:"Which one matches drawing? A or B?", vis:"🖍️", q:"¿Qué dice?", choices:["Me gusta dibujar.","Me gusta cantar."], c:0, ans:"Me gusta dibujar.", en:"I like to draw."},
+    {dir:"Your turn! Pick one and say it.", vis:"🧸 📖 🖍️ 🎤", q:"¿Qué te gusta?", ans:"Me gusta…", en:"Any choice is great! Example: Me gusta cantar."}
+  ]
+},
+{
+  title:"¿Quieres jugar?", en:"Playing Together", date:"Dec 1", ico:"🤝", color:"#8b5cf6",
+  goal:"I can invite a friend to play.<br>I can say yes, no, or whose turn it is.",
+  words:[["✅","sí","yes"],["❌","no","no"],["🙋","mi turno","my turn"],["👉","tu turno","your turn"],["💃","bailar","to dance"]],
+  video:{title:"Me gusta hacer", note:"Opening recall of last week. Listening only (the song uses hacer).", at:"start"},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["turno","TUR-no"],["sí","SÍ"],["gracias","GRA-cias"]], model:"¿Quieres jugar?", tip:"Clap two beats in turno. A short r is fine; you don't need to roll it.",
+     talk:[["¿Quieres jugar?","Would you like to play?"],["Sí, gracias.","Yes, thank you."],["Mi turno.","My turn."],["Tu turno.","Your turn."]]}
+  ],
+  turns:[
+    {dir:"Remember last week? Say what you like.", vis:"🖍️", q:"¿Qué te gusta?", ans:"Me gusta dibujar.", en:"I like to draw."},
+    {dir:"Yes or no? A or B?", vis:"✅", q:"¿Sí o no?", choices:["sí","no"], c:0, ans:"Sí.", en:"Yes."},
+    {dir:"What is it? A or B?", vis:"💃", q:"¿Qué es?", choices:["bailar","cantar"], c:0, ans:"Bailar.", en:"To dance."},
+    {dir:"She points to herself. A or B?", vis:"🙋", q:"¿Mi turno o tu turno?", choices:["Mi turno.","Tu turno."], c:0, ans:"Mi turno.", en:"My turn."},
+    {tell:true, pic:"quieres", title:"¿Quieres jugar?", lines:[["1. ¿Quieres jugar?","Would you like to play?"],["2. Sí, gracias.","Yes, thank you."],["3. Mi turno.","My turn."],["4. Tu turno.","Your turn."]]},
+    {pic:"quieres", dir:"Did the friend say yes? A or B?", q:"¿Quieres jugar?", choices:["Sí, gracias.","No, gracias."], c:0, ans:"Sí, gracias.", en:"Yes, thank you."},
+    {pic:"quieres", dir:"What do you say to give someone a turn? A or B?", vis:"👉", q:"¿Qué dices?", choices:["Mi turno.","Tu turno."], c:1, ans:"Tu turno.", en:"Your turn."}
+  ]
+},
+{
+  title:"Los días de la semana", en:"Days of the Week", date:"Dec 8", ico:"📅", color:"#0077b6",
+  goal:"I can find today on a calendar.<br>I can say the days in order.",
+  vocab:[{head:"Los días de la semana", sub:"Days of the week", cls:"days", words:[["1","lunes","Monday"],["2","martes","Tuesday"],["3","miércoles","Wednesday"],["4","jueves","Thursday"],["5","viernes","Friday"],["6","sábado","Saturday"],["7","domingo","Sunday"]]}],
+  video:{title:"Days of the week", note:"Play once, then again while students sing and point along."},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["lunes","LU-nes"],["martes","MAR-tes"],["mañana","ma-ÑA-na"]], model:"Hoy es lunes.", tip:"Clap three beats in mañana. ñ is one sound.",
+     talk:[["¿Qué día es hoy?","What day is it today?"],["Hoy es martes.","Today is Tuesday."],["¿Y mañana?","And tomorrow?"],["Mañana es miércoles.","Tomorrow is Wednesday."]]}
+  ],
+  turns:[
+    {dir:"Find <b>HOY</b> on the calendar.", vis:week(0), q:"¿Qué día es hoy?", ans:"Hoy es lunes.", en:"Today is Monday."},
+    {dir:"What comes next? A or B?", vis:week(0), q:"Hoy es lunes. Mañana es…", choices:["martes","domingo"], c:0, ans:"Mañana es martes.", en:"Tomorrow is Tuesday."},
+    {dir:"Say the days in order with me! A or B?", vis:week(-1), q:'lunes, martes, <span class="blank"></span>', choices:["miércoles","viernes"], c:0, ans:"lunes, martes, miércoles", en:"Monday, Tuesday, Wednesday"},
+    {tell:true, pic:"dias", title:"Hoy y mañana", lines:[["1. Hoy es lunes.","Today is Monday."],["2. Mañana es martes.","Tomorrow is Tuesday."],["3. Hoy es sábado.","Today is Saturday."],["4. Mañana es domingo.","Tomorrow is Sunday."]]},
+    {pic:"dias", dir:"What comes after lunes? A or B?", q:"lunes ➜ ?", choices:["martes","jueves"], c:0, ans:"martes", en:"Tuesday comes after Monday."},
+    {pic:"dias", dir:"What comes after sábado? A or B?", q:"sábado ➜ ?", choices:["viernes","domingo"], c:1, ans:"domingo", en:"Sunday comes after Saturday."},
+    {dir:"Spanish class is on Tuesday!", vis:week(1), q:"¿Qué día es hoy?", ans:"Hoy es martes.", en:"Today is Tuesday."}
+  ]
+},
+{
+  title:"Lugares de mi comunidad", en:"Places in My Community", date:"Dec 15", ico:"🏫", color:"#5b8c2a",
+  goal:"I can name places in my community.<br>I can find a place on a picture map.",
+  words:[["🏫","la escuela","school"],["🌳","el parque","park"],["📚","la biblioteca","library"],["🏪","la tienda","shop"]],
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["biblioteca","bi-blio-TE-ca"],["escuela","es-CUE-la"],["tienda","TIEN-da"]], model:"Está aquí.", tip:"Clap four beats in biblioteca. The strongest beat is TE.",
+     talk:[["¿Dónde está la biblioteca?","Where is the library?"],["Está aquí.","It is here."]]}
+  ],
+  turns:[
+    {dir:"What place is it? A or B?", vis:"📚", q:"¿Qué es?", choices:["la biblioteca","la escuela"], c:0, ans:"La biblioteca.", en:"The library."},
+    {dir:"Name the place.", vis:"🌳", q:"¿Qué es?", ans:"El parque.", en:"The park."},
+    {dir:"Look at the map. Type the number in the chat.", vis:townMap(), q:"¿Dónde está la biblioteca?", ans:"4. Está aquí.", en:"Number 4. It is here."},
+    {dir:"Look at the map. Type the number in the chat.", vis:townMap(), q:"¿Dónde está la escuela?", ans:"2. Está aquí.", en:"Number 2. It is here."},
+    {tell:true, pic:"lugares", title:"Mi comunidad", lines:[["1. La escuela.","The school."],["2. El parque.","The park."],["3. La biblioteca.","The library."],["4. La tienda.","The shop."]]},
+    {pic:"lugares", dir:"Where can you choose a book to read? A or B?", vis:"📖", q:"¿Dónde?", choices:["la biblioteca","el parque"], c:0, ans:"La biblioteca.", en:"The library."},
+    {pic:"lugares", dir:"Where can you buy something? A or B?", vis:"🪙", q:"¿Dónde?", choices:["la escuela","la tienda"], c:1, ans:"La tienda.", en:"The shop."}
+  ]
+},
+{
+  title:"¿Adónde vas?", en:"Going Places", date:"Jan 5", ico:"🚶", color:"#d63384",
+  goal:"I can say where I am going.<br>I can match a place to an activity.",
+  words:[["🏥","el hospital","hospital"],["🍽️","el restaurante","restaurant"],["🌳","al parque","to the park"],["🏫","a la escuela","to school"],["📚","a la biblioteca","to the library"]],
+  video:{title:"¿Adónde vas?", note:"Play once, then again while students point along."},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["parque","PAR-que"],["escuela","es-CUE-la"],["voy","VOY"]], model:"Voy al parque.", tip:"Clap two beats in parque. The u in que is quiet.",
+     talk:[["¿Adónde vas?","Where are you going?"],["Voy al parque.","I am going to the park."]]}
+  ],
+  turns:[
+    {dir:"Remember the map? Type the number in the chat.", vis:townMap(), q:"¿Dónde está el parque?", ans:"3. Está aquí.", en:"Number 3. It is here."},
+    {dir:"Where is he going? A or B?", vis:"🚶 ➜ 🌳", q:"¿Adónde vas?", choices:["Voy al parque.","Voy a la escuela."], c:0, ans:"Voy al parque.", en:"I am going to the park."},
+    {dir:"Say it with <b>Voy…</b>", vis:"🚶 ➜ 🏫", q:"¿Adónde vas?", ans:"Voy a la escuela.", en:"I am going to school."},
+    {dir:"Match the place to the activity. A or B?", vis:"⚽", q:"¿Adónde vas?", choices:["Voy al restaurante.","Voy al parque."], c:1, ans:"Voy al parque.", en:"I am going to the park."},
+    {tell:true, pic:"adonde", title:"¿Adónde vas?", lines:[["1. Voy a la escuela.","I am going to school."],["2. Voy al parque.","I am going to the park."],["3. Voy a la biblioteca.","I am going to the library."],["4. Voy al restaurante.","I am going to the restaurant."]]},
+    {pic:"adonde", dir:"Where do you go to eat a meal? A or B?", vis:"🍝", q:"¿Adónde vas?", choices:["el hospital","el restaurante"], c:1, ans:"Voy al restaurante.", en:"I am going to the restaurant."},
+    {pic:"adonde", dir:"Which one says you are going to school? A or B?", q:"¿Adónde vas?", choices:["Voy a la escuela.","Voy al parque."], c:0, ans:"Voy a la escuela.", en:"I am going to school."}
+  ]
+},
+{
+  title:"Mi ropa", en:"My Clothes", date:"Jan 12", ico:"👕", color:"#14b8a6",
+  goal:"I can name clothes.<br>I can say what I am wearing with Llevo…",
+  vocab:[
+    {head:"Mi ropa", sub:"My clothes", words:[["👕","la camiseta","T-shirt"],["👖","los pantalones","pants"],["👗","el vestido","dress"],["👟","los zapatos","shoes"]]},
+    {head:"¿Qué ropa llevo?", sub:"What am I wearing?", words:[["🧥","el abrigo","coat"],["👒","el sombrero","hat"],["👔","la camisa","shirt"],["👕👖","la ropa","clothing"]]}
+  ],
+  video:{title:"¿Qué ropa llevas hoy?", note:"Listening only. The song says llevas (you wear); we practice llevo (I wear)."},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["zapatos","za-PA-tos"],["camiseta","ca-mi-SE-ta"],["pantalones","pan-ta-LO-nes"]], model:"Llevo zapatos.", tip:"Clap three beats in zapatos. In our model, z sounds like s.",
+     talk:[["Llevo una camiseta.","I am wearing a T-shirt."],["Llevo zapatos.","I am wearing shoes."]]},
+    {title:"Mi voz", syl:[], words:[["sombrero","som-BRE-ro"],["abrigo","a-BRI-go"],["llevo","LLE-vo"]], model:"Llevo un abrigo.", tip:"Clap three beats in sombrero. Give BRE more weight.",
+     talk:[["Llevo un abrigo.","I am wearing a coat."],["Llevo un sombrero.","I am wearing a hat."]]}
+  ],
+  turns:[
+    {dir:"Remember last week? Where are you going?", vis:"🚶 ➜ 🌳", q:"¿Adónde vas?", ans:"Voy al parque.", en:"I am going to the park."},
+    {dir:"What is it? A or B?", vis:"👖", q:"¿Qué es?", choices:["los pantalones","el vestido"], c:0, ans:"Los pantalones.", en:"Pants."},
+    {dir:"Say it with <b>Llevo…</b>", vis:"👟", q:"Llevo…", ans:"Llevo zapatos.", en:"I am wearing shoes."},
+    {tell:true, pic:"ropa", title:"Mi ropa", lines:[["1. Una camiseta.","A T-shirt."],["2. Unos pantalones.","A pair of pants."],["3. Un vestido.","A dress."],["4. ¡Llevo zapatos!","I am wearing shoes!"]]},
+    {pic:"ropa", dir:"Which one goes on your feet? A or B?", q:"¿Qué es?", choices:["los zapatos","la camiseta"], c:0, ans:"Los zapatos.", en:"Shoes."},
+    {dir:"A or B?", vis:"🧥", q:"¿Qué llevo?", choices:["Llevo un abrigo.","Llevo un sombrero."], c:0, ans:"Llevo un abrigo.", en:"I am wearing a coat."},
+    {tell:true, pic:"llevo", title:"¿Qué ropa llevo?", lines:[["1. Llevo una camisa.","I am wearing a shirt."],["2. Llevo pantalones.","I am wearing pants."],["3. Llevo un abrigo.","I am wearing a coat."],["4. Llevo un sombrero.","I am wearing a hat."]]},
+    {pic:"llevo", dir:"Which one goes on your head? A or B?", q:"¿Qué es?", choices:["el abrigo","el sombrero"], c:1, ans:"El sombrero.", en:"The hat."},
+    {dir:"Outfit detective! Say two things.", vis:"🧍 👒 🧥", q:"Llevo… y…", ans:"Llevo un sombrero y un abrigo.", en:"I am wearing a hat and a coat."}
+  ]
+},
+{
+  title:"Mi comunidad en español", en:"Review", date:"Jan 19", ico:"⭐", color:"#ef4444",
+  goal:"I can use words I know in a short talk.<br>I can show something I learned.",
+  words:[["👋","hola","hello"],["😀","feliz","happy"],["🌳","el parque","park"],["🏪","la tienda","shop"],["3️⃣","tres","three"],["👒","el sombrero","hat"]],
+  video:{title:"A favorite video", note:"Open by replaying a class favorite, such as ¿Adónde vas?", at:"start"},
+  sounds:[
+    {title:"Mi voz", syl:[], words:[["repaso","re-PA-so"],["hola","HO-la"],["feliz","fe-LIZ"]], model:"Me llamo Ana.", tip:"Pick one sound that helps your sentence. Listen, echo, then try.",
+     talk:[["Hola. Me llamo Ana.","Hello. My name is Ana."],["Hola. Me llamo…","Hello. My name is…"],["¿Cómo estás?","How are you?"],["Estoy feliz.","I am happy."]]}
+  ],
+  turns:[
+    {dir:"Say hello and your name!", vis:"👋", q:"Hola. Me llamo…", ans:"Hola. Me llamo ___.", en:"Hello. My name is ___."},
+    {dir:"A or B?", vis:"😀", q:"¿Cómo estás?", choices:["Estoy feliz.","Llevo zapatos."], c:0, ans:"Estoy feliz.", en:"I am happy."},
+    {dir:"Read the price tag.", vis:"⚽ "+tag(3), q:"¿Cuánto cuesta?", ans:"Cuesta tres pesos.", en:"It costs three pesos."},
+    {dir:"Say it with <b>Voy…</b>", vis:"🚶 ➜ 🌳", q:"¿Adónde vas?", ans:"Voy al parque.", en:"I am going to the park."},
+    {tell:true, pic:"ana", title:"Ana", lines:[["1. Hola. Me llamo Ana.","Hello. My name is Ana."],["2. Estoy feliz.","I am happy."],["3. Llevo un sombrero.","I am wearing a hat."],["4. Voy al parque.","I am going to the park."]]},
+    {pic:"ana", dir:"How does Ana feel? A or B?", q:"¿Cómo está Ana?", choices:["feliz","triste"], c:0, ans:"Feliz.", en:"Happy."},
+    {pic:"ana", dir:"Where is Ana going? A or B?", q:"¿Adónde va Ana?", choices:["al parque","a la tienda"], c:0, ans:"Al parque.", en:"To the park."}
+  ]
+}
+];
+
+/* ---------- state ---------- */
+let t = null;      // topic index
+let s = 0;         // slide index: title, goal, vocab page(s), turns, end
+let shown = false;
+const $ = id => document.getElementById(id);
+
+/* ---------- home ---------- */
+function buildHome(){
+  $('grid').innerHTML = TOPICS.map((tp,i)=>`
+    <button class="topic-btn" style="--c:${tp.color}" onclick="openTopic(${i})">
+      <span class="ico">${tp.ico}</span>
+      <span><div class="t">${tp.title}</div><div class="s">${tp.en} &bull; ${tp.date}</div></span>
+    </button>`).join('');
+}
+function goHome(){
+  t = null;
+  $('activity').style.display='none';
+  $('home').style.display='flex';
+  window.scrollTo(0,0);
+}
+function openTopic(i){
+  t = i; s = 0;
+  $('home').style.display='none';
+  $('activity').style.display='flex';
+  render();
+}
+
+/* ---------- activity ---------- */
+function slidesFor(tp){
+  const vocab = tp.vocab || [{head:"Palabras nuevas", sub:"New words", words:tp.words}];
+  const vid = tp.video ? [{type:'video', v:tp.video}] : [];
+  const early = tp.video && tp.video.at === 'start';
+  return [{type:'title'}, {type:'goal'}]
+    .concat(early ? vid : [])
+    .concat(vocab.map(v=>({type:'vocab', v})))
+    .concat(tp.turns.map((tn,k)=>({type: tn.tell ? 'story' : 'turn', tn, k})))
+    .concat(early ? [] : vid)
+    .concat((tp.sounds||[]).flatMap(x=>[{type:'sound', x},{type:'talk', x}]))
+    .concat([{type:'end'}]);
+}
+function render(){
+  const tp = TOPICS[t], slides = slidesFor(tp), sl = slides[s];
+  document.documentElement.style.setProperty('--c', tp.color);
+  $('barIco').textContent = tp.ico;
+  $('barTitle').textContent = tp.title + '  •  ' + tp.en;
+  const done = (sl.type==='turn'||sl.type==='story') ? sl.k+1 : sl.type==='end' ? tp.turns.length : 0;
+  $('dots').innerHTML = tp.turns.map((_,k)=>`<span class="dot ${k < done ? 'on':''}"></span>`).join('');
+  shown = false;
+  const st = $('stage');
+  $('nextBtn').textContent = 'Next ▶';
+
+  if (sl.type==='title'){
+    st.innerHTML = `
+      <div class="vis hero">${tp.ico}</div>
+      <p class="big-title">${tp.title}</p>
+      <div class="goal">${tp.en}</div>`;
+    setBtns(false, true, true);
+    return;
+  }
+  if (sl.type==='goal'){
+    st.innerHTML = `
+      <div class="dir">🎯 <b>Meta de hoy</b> &nbsp;•&nbsp; Today's goal</div>
+      <div class="goal-big">${tp.goal}</div>`;
+    setBtns(true, true, true);
+    return;
+  }
+  if (sl.type==='vocab'){
+    st.innerHTML = `
+      <div class="dir">📚 <b>${sl.v.head}</b> &nbsp;•&nbsp; ${sl.v.sub}</div>
+      <div class="bank big ${sl.v.cls||''}">${sl.v.words.map(w=>`<div class="word"><div class="e">${w[0]}</div><div class="w">${w[1]}</div><div class="m">${w[2]}</div></div>`).join('')}</div>`;
+    setBtns(true, true, true);
+    return;
+  }
+  if (sl.type==='video'){
+    st.innerHTML = `
+      <div class="dir">🎬 <b>Video</b> &nbsp;•&nbsp; Watch and sing along</div>
+      <div class="vis hero">🎬</div>
+      <p class="big-title">${sl.v.title}</p>
+      <div class="goal">${sl.v.note}</div>
+      <div class="tip">🔊 Teacher: in Teams, share with <b>Include computer sound</b> turned on.</div>`;
+    setBtns(true, true, true);
+    return;
+  }
+  if (sl.type==='story'){
+    st.innerHTML = `
+      <div class="dir">📖 <b>Leemos juntos</b> &nbsp;•&nbsp; Listen to the story</div>
+      <div class="story-wrap">
+        ${picHTML(sl.tn.pic, false)}
+        <div class="story big"><div class="story-title">${sl.tn.title}</div>${sl.tn.lines.map(l=>Array.isArray(l)?`<div class="sl">${l[0]}<span class="sen">${l[1]}</span></div>`:`<div>${l}</div>`).join('')}</div>
+      </div>`;
+    setBtns(true, true, true);
+    return;
+  }
+  if (sl.type==='sound'){
+    const x = sl.x;
+    const syll = w => w.split('-').map(p => p === p.toUpperCase() ? `<span class="stress">${p.toLowerCase()}</span>` : p).join('<span class="dash">·</span>');
+    st.innerHTML = `
+      <div class="dir">🔊 <b>Sonidos</b> &nbsp;•&nbsp; Listen and repeat</div>
+      <p class="snd-title">${x.title}</p>
+      ${x.syl && x.syl.length ? `<div class="syl">${x.syl.map(y=>`<span>${y}</span>`).join('')}</div>` : ''}
+      <div class="bank big snd">${x.words.map(w=>`<div class="word"><div class="w">${w[0]}</div><div class="sb">${syll(w[1])}</div></div>`).join('')}</div>
+      ${x.model ? `<div class="model">🗨️ ${x.model}</div>` : ''}
+      <div class="tip">💡 ${x.tip}</div>`;
+    setBtns(true, true, true);
+    return;
+  }
+  if (sl.type==='talk'){
+    st.innerHTML = `
+      <div class="dir">🗣️ <b>Hablamos</b> &nbsp;•&nbsp; ${TALK_DIR}</div>
+      <div class="talk">${sl.x.talk.map((l,k)=>`<div class="bub ${k%2?'leo':'luna'}"><span class="who">${SPEAKERS[k%2]}</span>${l[0]}<span class="ten">${l[1]}</span></div>`).join('')}</div>`;
+    setBtns(true, true, true);
+    return;
+  }
+  if (sl.type==='end'){
+    st.innerHTML = `
+      <p class="big-title">¡Muy bien! 🎉</p>
+      <div class="vis">⭐ 🌟 ⭐</div>`;
+    setBtns(true, true, true);
+    $('nextBtn').textContent = '🏠 Topics';
+    return;
+  }
+
+  const tn = sl.tn;
+  const choices = tn.choices ? `<div class="choices">${tn.choices.map((c,k)=>
+      `<div class="choice" data-k="${k}"><span class="letter">${'ABC'[k]}</span>${c}</div>`).join('')}</div>` : '';
+  st.innerHTML = `
+    <div class="dir">${tn.dir}</div>
+    ${tn.story ? `<div class="story">${tn.story}</div>` : ''}
+    ${tn.vis ? `<div class="vis">${tn.vis}</div>` : ''}
+    ${tn.pic ? picHTML(tn.pic, true) : ''}
+    <p class="q">${tn.q}</p>
+    ${choices}
+    <div class="answer" id="ans"><div class="es">${tn.ans}</div><div class="en">${tn.en}</div></div>`;
+  setBtns(true, true, false);
+}
+function setBtns(back, next, hideShow){
+  $('backBtn').disabled = !back;
+  $('nextBtn').disabled = !next;
+  $('showBtn').style.visibility = hideShow ? 'hidden' : 'visible';
+  $('showBtn').disabled = false;
+}
+function reveal(){
+  if (t === null) return;
+  const sl = slidesFor(TOPICS[t])[s];
+  if (sl.type !== 'turn' || shown) return;
+  shown = true;
+  const tn = sl.tn;
+  $('ans').classList.add('show');
+  document.querySelectorAll('.choice').forEach(el=>{
+    el.classList.add(+el.dataset.k === tn.c ? 'right' : 'dim');
+    if (+el.dataset.k === tn.c) el.querySelector('.letter').textContent = '✓';
+  });
+  $('showBtn').disabled = true;
+}
+function next(){
+  if (t === null) return;
+  if (s === slidesFor(TOPICS[t]).length - 1) return goHome();
+  s++; render();
+}
+function back(){
+  if (t === null || s === 0) return;
+  s--; render();
+}
+function toggleFull(){
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+}
+document.addEventListener('keydown', e=>{
+  if (t === null) return;
+  if (e.key === 'ArrowRight') next();
+  else if (e.key === 'ArrowLeft') back();
+  else if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); reveal(); }
+  else if (e.key === 'h' || e.key === 'H' || e.key === 'Escape') goHome();
+});
+
+buildHome();
+</script>
+</body>
+</html>
